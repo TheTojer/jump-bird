@@ -5,6 +5,7 @@ public partial class MainWindow : Form
     private int pipeSpeed = 5;
     private int gravity = 5;
     private int score = 0;
+    private int mainPipe = 0;
 
     public MainWindow()
     {
@@ -20,48 +21,54 @@ public partial class MainWindow : Form
 
         scoreText.Text = score.ToString();
 
-        // if(bottomPipe.Left < -150 )
-        // {
-        //     bottomPipe.Left = 950;
-        //     score++;
-        // }
+        if(pipes[mainPipe * 2].Left < -180 )
+        {
+            r = random.Next(1, 7);
+            pipes[mainPipe * 2 + 1].Location = new Point(1700, -800 + 100 * r);
+            pipes[mainPipe * 2].Location = new Point(1700, 100 + 100 * r);
+            Console.WriteLine(pipes[mainPipe * 2].Left);
+            mainPipe = (mainPipe + 1) % 2;
+            score++;
+        }
 
-        // if (topPipe.Left < -180)
-        // {
-        //     topPipe.Left = 950;
-        //     score++;
-        // }
+        if
+        (
+            bird.Bounds.IntersectsWith(pipes[mainPipe * 2].Bounds) ||
+            bird.Bounds.IntersectsWith(pipes[mainPipe * 2 + 1].Bounds) ||
+            bird.Bounds.IntersectsWith(ground.Bounds) || bird.Top < -25
+        )
+            GameOver();
 
-        // if (bird.Bounds.IntersectsWith(bottomPipe.Bounds) ||
-        //     bird.Bounds.IntersectsWith(topPipe.Bounds) ||
-        //     bird.Bounds.IntersectsWith(ground.Bounds) || bird.Top < -25)
-        // {
-        //     if (score > 0) score--;
-        //     else gameOver();
-        // }
-
-        // if (score > 10) pipeSpeed = 10;
+        if (score > 10) pipeSpeed = 10;
     }
 
-    private void onKeyUp(object sender, KeyEventArgs e)
+    private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Space) gravity = 5;
     }
 
-    private void onKeyDown(object sender, KeyEventArgs e)
+    private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Space) gravity = -5;
-        if (e.KeyCode == Keys.R) restart();
+        if (e.KeyCode == Keys.R) Restart();
     }
 
-    private void gameOver()
+    private void GameOver()
     {
         gameTimer.Stop();
-        scoreLabel.Text = "Oops! Game Over";
+        scoreLabel.Text = "Игра окончена!";
+        scoreText.Text = "Ваш счет: " + scoreText.Text;
     }
 
-    private void restart()
+    private void Restart()
     {
-        scoreLabel.Text = "Jopa";
+        bird.Location = new Point(25, 226);
+        SetPipesLocation();
+        scoreText.Text = "0";
+        scoreLabel.Text = "Счет:";
+        score = 0;
+        gravity = 5;
+        mainPipe = 0;
+        gameTimer.Start();
     }
 }

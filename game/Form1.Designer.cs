@@ -37,26 +37,29 @@ partial class MainWindow
     Label scoreText;
     Timer gameTimer;
 
+    Random random = new Random();
+    int r = 0;
+
     private void InitializeComponent()
     {
         components = new Container();
         bird = new PictureBox();
 
-        pipes = new PictureBox[20];
+        pipes = new PictureBox[4];
 
         ground = new PictureBox();
         scoreLabel = new Label();
         scoreText = new Label();
         gameTimer = new Timer(components);
 
-        for (int i = 0; i < 10; i++)
-            pipes.Append(new PictureBox());
+        for (int i = 0; i < pipes.Length; i++)
+            pipes[i] = new PictureBox();
 
-        foreach (var pipe in pipes)
-            BeginInit(pipe);
+        for (int i = 0; i < pipes.Length; i++)
+            ((System.ComponentModel.ISupportInitialize)(pipes[i])).BeginInit();
 
-        BeginInit(bird);
-        BeginInit(ground);
+        ((System.ComponentModel.ISupportInitialize)(bird)).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)(ground)).BeginInit();
 
         SuspendLayout();
         
@@ -68,25 +71,26 @@ partial class MainWindow
             bird.Image = Image.FromFile(@"images\bird.png");
 
         bird.Location = new Point(25, 226);
-        bird.Size = new Size(134, 99);
+        bird.Size = new Size(100, 75);
         bird.SizeMode = PictureBoxSizeMode.StretchImage;
         
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < pipes.Length; i++)
         {
             pipes[i].Name = i % 2 == 0 ? "bottomPipe" : "topPipe" + i;
             pipes[i].TabStop = false;
             pipes[i].BackColor = Color.Transparent;
-            pipes[i].Size = new Size(190, 556);
+            pipes[i].Size = new Size(150, 700);
             pipes[i].SizeMode = PictureBoxSizeMode.StretchImage;
-            pipes[i].Location = new Point(500 + (int)(i / 2) * 100, i % 2 == 0 ? 0 : 300);
         }
 
+        SetPipesLocation();
+
         if (File.Exists(@"images\b_pipe.png"))
-            for (int i = 0; i < 20; i += 2)
+            for (int i = 0; i < pipes.Length; i += 2)
                 pipes[i].Image = Image.FromFile(@"images\b_pipe.png");
 
         if (File.Exists(@"images\t_pipe.png"))
-            for (int i = 1; i < 20; i += 2)
+            for (int i = 1; i < pipes.Length; i += 2)
                 pipes[i].Image = Image.FromFile(@"images\t_pipe.png");
         
         ground.Name = "ground";
@@ -96,12 +100,12 @@ partial class MainWindow
         if (File.Exists(@"images\ground.png"))
             ground.Image = Image.FromFile(@"images\ground.png");
 
-        ground.Location = new Point(-6, 645);
-        ground.Size = new Size(1131, 194);
+        ground.Location = new Point(0, 700);
+        ground.Size = new Size(1200, 200);
         ground.SizeMode = PictureBoxSizeMode.StretchImage;
 
         scoreLabel.Name = "scoreLabel";
-        scoreLabel.Text = "Score:";
+        scoreLabel.Text = "Счет:";
         scoreLabel.TabIndex = 4;
 
         scoreLabel.AutoSize = true;
@@ -145,7 +149,7 @@ partial class MainWindow
 
         AutoScaleDimensions = new SizeF(7, 15);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(1111, 740);
+        ClientSize = new Size(1200, 900);
 
         BackColor = Color.LightSkyBlue;
         BackgroundImageLayout = ImageLayout.Stretch;
@@ -159,22 +163,34 @@ partial class MainWindow
         foreach (var pipe in pipes)
             Controls.Add(pipe);
 
-        KeyDown += new KeyEventHandler(onKeyDown);
-        KeyUp += new KeyEventHandler(onKeyUp);
+        KeyDown += new KeyEventHandler(MainWindow_OnKeyDown);
+        KeyUp += new KeyEventHandler(MainWindow_OnKeyUp);
+        SizeChanged += new EventHandler(MainWindow_OnSizeChanged);
 
-        foreach (var pipe in pipes)
-            EndInit(ref pipe);
+        for (int i = 0; i < pipes.Length; i++)
+            ((System.ComponentModel.ISupportInitialize)(pipes[i])).EndInit();
 
-        EndInit(ref bird);
-        EndInit(ref ground);
+        ((System.ComponentModel.ISupportInitialize)(bird)).EndInit();
+        ((System.ComponentModel.ISupportInitialize)(ground)).EndInit();
         ResumeLayout(false);
         PerformLayout();
     }
 
     #endregion
 
-    private void BeginInit(ref Control control) =>
-        ((System.ComponentModel.ISupportInitialize)(control)).BeginInit();
-    private void EndInit(ref Control control) =>
-        ((System.ComponentModel.ISupportInitialize)(control)).EndInit();
+    private void MainWindow_OnSizeChanged(object sender, EventArgs e)
+    {
+        ground.Size = new Size(Width, 200);
+        ground.Location = new Point(0, Height - 200);
+    }
+
+    private void SetPipesLocation()
+    {
+        for (int i = 0; i < pipes.Length; i++)
+        {
+            if (i % 2 == 0)
+                r = random.Next(1, 7);
+            pipes[i].Location = new Point(700 + (int)(i / 2) * 1000, i % 2 == 0 ? 100 + 100 * r : -800 + 100 * r);
+        }
+    }
 }
