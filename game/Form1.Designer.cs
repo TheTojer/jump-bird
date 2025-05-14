@@ -31,8 +31,7 @@ partial class MainWindow
     ///  the contents of this method with the code editor.
     /// </summary>
     PictureBox bird;
-    PictureBox bottomPipe;
-    PictureBox topPipe;
+    PictureBox[] pipes;
     PictureBox ground;
     Label scoreLabel;
     Label scoreText;
@@ -42,21 +41,26 @@ partial class MainWindow
     {
         components = new Container();
         bird = new PictureBox();
-        bottomPipe = new PictureBox();
-        topPipe = new PictureBox();
+
+        pipes = new PictureBox[20];
+
         ground = new PictureBox();
         scoreLabel = new Label();
         scoreText = new Label();
         gameTimer = new Timer(components);
 
-        ((System.ComponentModel.ISupportInitialize)(topPipe)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(bottomPipe)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(bird)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(ground)).BeginInit();
+        for (int i = 0; i < 10; i++)
+            pipes.Append(new PictureBox());
+
+        foreach (var pipe in pipes)
+            BeginInit(pipe);
+
+        BeginInit(bird);
+        BeginInit(ground);
+
         SuspendLayout();
         
         bird.Name = "bird";
-        bird.TabIndex = 0;
         bird.TabStop = false;
 
         bird.BackColor = Color.Transparent;
@@ -67,33 +71,25 @@ partial class MainWindow
         bird.Size = new Size(134, 99);
         bird.SizeMode = PictureBoxSizeMode.StretchImage;
         
-        bottomPipe.Name = "bottomPipe";
-        bottomPipe.TabIndex = 1;
-        bottomPipe.TabStop = false;
+        for (int i = 0; i < 20; i++)
+        {
+            pipes[i].Name = i % 2 == 0 ? "bottomPipe" : "topPipe" + i;
+            pipes[i].TabStop = false;
+            pipes[i].BackColor = Color.Transparent;
+            pipes[i].Size = new Size(190, 556);
+            pipes[i].SizeMode = PictureBoxSizeMode.StretchImage;
+            pipes[i].Location = new Point(500 + (int)(i / 2) * 100, i % 2 == 0 ? 0 : 300);
+        }
 
-        bottomPipe.BackColor = Color.Transparent;
-        if (File.Exists(@"images\pipe.png"))
-            bottomPipe.Image = Image.FromFile(@"images\pipe.png");
+        if (File.Exists(@"images\b_pipe.png"))
+            for (int i = 0; i < 20; i += 2)
+                pipes[i].Image = Image.FromFile(@"images\b_pipe.png");
 
-        bottomPipe.Location = new Point(543, 475);
-        bottomPipe.Size = new Size(172, 228);
-        bottomPipe.SizeMode = PictureBoxSizeMode.StretchImage;
-        
-        topPipe.Name = "topPipe";
-        topPipe.TabIndex = 2;
-        topPipe.TabStop = false;
-        topPipe.UseWaitCursor = true;
-
-        topPipe.BackColor = Color.Transparent;
-        if (File.Exists(@"images\pipedown.png"))
-            topPipe.Image = Image.FromFile(@"images\pipedown.png");
-
-        topPipe.Location = new Point(831, 0);
-        topPipe.Size = new Size(161, 261);
-        topPipe.SizeMode = PictureBoxSizeMode.StretchImage;
+        if (File.Exists(@"images\t_pipe.png"))
+            for (int i = 1; i < 20; i += 2)
+                pipes[i].Image = Image.FromFile(@"images\t_pipe.png");
         
         ground.Name = "ground";
-        ground.TabIndex = 3;
         ground.TabStop = false;
 
         ground.BackColor = Color.Transparent;
@@ -157,21 +153,28 @@ partial class MainWindow
 
         Controls.Add(scoreText);
         Controls.Add(scoreLabel);
-        Controls.Add(topPipe);
         Controls.Add(ground);
         Controls.Add(bird);
-        Controls.Add(bottomPipe);
+
+        foreach (var pipe in pipes)
+            Controls.Add(pipe);
 
         KeyDown += new KeyEventHandler(onKeyDown);
         KeyUp += new KeyEventHandler(onKeyUp);
 
-        ((System.ComponentModel.ISupportInitialize)(topPipe)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(bottomPipe)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(bird)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(ground)).EndInit();
+        foreach (var pipe in pipes)
+            EndInit(ref pipe);
+
+        EndInit(ref bird);
+        EndInit(ref ground);
         ResumeLayout(false);
         PerformLayout();
     }
 
     #endregion
+
+    private void BeginInit(ref Control control) =>
+        ((System.ComponentModel.ISupportInitialize)(control)).BeginInit();
+    private void EndInit(ref Control control) =>
+        ((System.ComponentModel.ISupportInitialize)(control)).EndInit();
 }
