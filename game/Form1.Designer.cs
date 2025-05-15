@@ -30,15 +30,16 @@ partial class MainWindow
     ///  Required method for Designer support - do not modify
     ///  the contents of this method with the code editor.
     /// </summary>
-    PictureBox bird;
-    PictureBox[] pipes;
-    PictureBox ground;
-    Label scoreLabel;
-    Label scoreText;
-    Timer gameTimer;
+    private PictureBox bird;
+    private PictureBox[] pipes;
+    private PictureBox ground;
+    private Label scoreLabel;
+    private Label scoreText;
+    private Timer gameTimer;
 
-    Random random = new Random();
-    int r = 0;
+    private Random random = new Random();
+    private int r = 0;
+    private const string projectPath = @"..\..\..\";
 
     private void InitializeComponent()
     {
@@ -67,8 +68,8 @@ partial class MainWindow
         bird.TabStop = false;
 
         bird.BackColor = Color.Transparent;
-        if (File.Exists(@"images\bird.png"))
-            bird.Image = Image.FromFile(@"images\bird.png");
+        if (File.Exists(projectPath + @"images\bird.png"))
+            bird.Image = Image.FromFile(projectPath + @"images\bird.png");
 
         bird.Location = new Point(25, 226);
         bird.Size = new Size(100, 75);
@@ -85,20 +86,20 @@ partial class MainWindow
 
         SetPipesLocation();
 
-        if (File.Exists(@"images\b_pipe.png"))
+        if (File.Exists(projectPath + @"images\b_pipe.png"))
             for (int i = 0; i < pipes.Length; i += 2)
-                pipes[i].Image = Image.FromFile(@"images\b_pipe.png");
+                pipes[i].Image = Image.FromFile(projectPath + @"images\b_pipe.png");
 
-        if (File.Exists(@"images\t_pipe.png"))
+        if (File.Exists(projectPath + @"images\t_pipe.png"))
             for (int i = 1; i < pipes.Length; i += 2)
-                pipes[i].Image = Image.FromFile(@"images\t_pipe.png");
+                pipes[i].Image = Image.FromFile(projectPath + @"images\t_pipe.png");
         
         ground.Name = "ground";
         ground.TabStop = false;
 
         ground.BackColor = Color.Transparent;
-        if (File.Exists(@"images\ground.png"))
-            ground.Image = Image.FromFile(@"images\ground.png");
+        if (File.Exists(projectPath + @"images\ground.png"))
+            ground.Image = Image.FromFile(projectPath + @"images\ground.png");
 
         ground.Location = new Point(0, 700);
         ground.Size = new Size(1200, 200);
